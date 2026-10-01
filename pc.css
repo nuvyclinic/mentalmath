@@ -1,0 +1,64 @@
+/* Mental Math — layout para PC (telas largas). Carregado só quando a janela tem 1200px ou mais. */
+body{background:linear-gradient(180deg,rgba(5,4,3,.58),rgba(5,4,3,.84)),url(bg-pc.jpg) center/cover fixed no-repeat;display:block}
+body.play{background-image:linear-gradient(180deg,rgba(5,4,3,.8),rgba(5,4,3,.93)),url(bg-pc.jpg)}
+main{max-width:1240px;margin:0 auto;padding:36px 56px;background:none;box-shadow:none;min-height:100vh}
+main::before{position:fixed;inset:14px}
+.brand,.who,.rec,.cap,.top h1{text-shadow:0 1px 10px rgba(0,0,0,.85)}
+@media (hover:hover){button:hover:not(:disabled),.btn:hover,.lk:hover,.who a:hover{border-color:var(--gold)}}
+@media (min-width:1600px){main{max-width:1440px}.pg-game #qt{font-size:6rem}}
+
+/* ---- jogo ---- */
+.pg-game .brand .logo{width:72px;height:72px}
+.pg-game h1{font-size:2.6rem}
+.pg-game #home.on{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px 36px;align-content:start}
+.pg-game #home .brand{grid-column:1;grid-row:1}
+.pg-game #home .who{grid-column:2;grid-row:1;justify-self:end;align-self:center}
+.pg-game #home>.card{grid-column:1}
+.pg-game #home .side{grid-column:2;grid-row:2/span 3;display:flex;flex-direction:column;gap:16px}
+.pg-game .rec{text-align:left;font-size:1.05rem}
+.pg-game #go{padding:24px;font-size:1.35rem}
+.pg-game #top5box:not([hidden]){display:block}
+.t5{display:grid;grid-template-columns:2.4em 1fr auto;gap:8px;padding:9px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.t5 span:first-child{color:var(--mut)}.t5 span:last-child{color:var(--a1)}
+.t5.me{background:rgba(201,164,92,.12)}
+.pg-game #game.on{display:grid;grid-template-columns:250px minmax(0,1fr) 300px;grid-template-rows:auto auto 1fr;gap:16px 28px;min-height:calc(100vh - 72px)}
+.pg-game #game .top,.pg-game #game .bar{grid-column:1/-1}
+.pg-game #game .panel{display:block;grid-column:1;grid-row:3;align-self:start}
+.pg-game #game .qc{grid-column:2;grid-row:3}
+.pg-game #game .pad{grid-column:3;grid-row:3;align-self:end}
+.pg-game .panel{background:rgba(16,13,9,.74);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:16px}
+.pg-game .panel div{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.pg-game .panel b{font-weight:400;font-style:italic;font-size:1.5rem;color:var(--a1);font-variant-numeric:tabular-nums}
+.pg-game .panel .keys{color:var(--mut);font-size:.85rem;font-style:italic;line-height:1.5;margin-top:12px}
+.pg-game #qt{font-size:clamp(3rem,4.6vw,5rem)}
+.pg-game #an{font-size:clamp(3rem,5vw,4.5rem);min-width:50%}
+.pg-game .pad button{height:76px;font-size:1.9rem}
+.pg-game .bar{height:10px;border-radius:5px}.pg-game .bar i{border-radius:5px}
+.pg-game .top b{font-size:2rem}
+.pg-game #end.on{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 28px;align-content:start;padding-top:24px}
+.pg-game #end>div:first-child{grid-column:1/3;align-self:center}
+.pg-game #eg{grid-column:3;grid-row:1}
+.pg-game #rv{grid-column:1/-1}
+.pg-game #again{margin-top:0}
+.pg-game .big{font-size:6.5rem}
+
+/* ---- login ---- */
+.pg-login main{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:12px 64px;align-content:center;max-width:1100px}
+.pg-login .brand{grid-column:1;grid-row:1;align-self:end;flex-direction:column;align-items:flex-start;gap:16px}
+.pg-login .brand .logo{width:110px;height:110px}
+.pg-login h1{font-size:4rem}
+.pg-login .brand .sub{font-size:1.2rem}
+.pg-login .pitch{display:block;grid-column:1;grid-row:2;align-self:start;margin:12px 0 0;padding:0;list-style:none;font-size:1.1rem;line-height:1.9}
+.pg-login .pitch li::before{content:"◆";color:var(--gold);margin-right:12px;font-size:.7em;vertical-align:.15em}
+.pg-login .card{grid-column:2;grid-row:1/span 2;align-self:center;padding:22px}
+.pg-login #guest{grid-column:2;grid-row:3}
+.pg-login .cap{grid-column:1/-1}
+
+/* ---- ranking ---- */
+.pg-rank main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px 32px;align-content:start;max-width:1040px}
+.pg-rank .top{grid-column:1/-1}
+.pg-rank #pd{grid-column:1;flex-direction:column}
+.pg-rank #bd{grid-column:1}
+.pg-rank .card{grid-column:2;grid-row:2/span 3;align-self:start}
+.pg-rank .cap{grid-column:1/-1}
+.pg-rank td{padding:14px 10px;font-size:1.1rem}
