@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0c0a08">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Mental Math — Ranking</title>
 <link rel="stylesheet" href="site.css">
 </head>
@@ -17,6 +20,7 @@
 </main>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="mm.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const MODES={sprint:'Sprint 60s',n30:'30 questões',daily:'Desafio do dia',surv:'Sobrevivência'},LV=['Fácil','Médio','Difícil','Expert'],NM={'!':'n!','²':'x²','^':'xⁿ'};
@@ -26,8 +30,7 @@ const label=b=>{const p=b.split('|'),m=p[0],d=m==='daily'?p[1]:'',r=p.slice(m===
 const fmt=(b,s)=>{const m=b.split('|')[0];return m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',',')+'s':s+' acertos'};
 let sb,period='all',me=null,cur='';
 async function init(){
-  if(!window.MM||/^COLE/.test(MM.key)||!window.supabase){$('#empty').textContent='Configuração pendente: falta a chave pública em config.js.';return}
-  sb=supabase.createClient(MM.url,MM.key);
+  try{if(!window.MMclient)throw new Error('Falta o arquivo mm.js no repositório.');sb=MMclient()}catch(e){$('#empty').textContent=e.message;return}
   const {data:{session}}=await sb.auth.getSession();
   if(session){const {data}=await sb.from('profiles').select('nickname').eq('id',session.user.id).maybeSingle();me=data&&data.nickname}
   try{cur=bk(JSON.parse(localStorage.getItem('calcmental')).cfg)}catch(e){}
