@@ -1,0 +1,27 @@
+:root{color-scheme:dark;--bg:#0c0a08;--ink:#e6d9b8;--mut:#a09068;--line:#4a3d24;--gold:#c9a45c;--a1:#ecd08f;--a2:#b8893a;--on:#1a1207;--ok:#7ccf6a;--bad:#e5534b;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"DejaVu Serif",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{min-height:100%;margin:0;background:#050403;color:var(--ink);font:16px/1.4 var(--serif);display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}
+main{position:relative;width:100%;max-width:440px;padding:24px 20px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(180deg,rgba(8,7,5,.55),rgba(8,7,5,.88)),url(bg.jpg) center top/cover no-repeat;box-shadow:0 0 0 1px rgba(201,164,92,.2),0 30px 80px rgba(0,0,0,.7)}
+main::before{content:"";position:absolute;inset:8px;border:1px solid rgba(201,164,92,.45);pointer-events:none;background:radial-gradient(circle at 0 0,var(--gold) 2px,transparent 3px),radial-gradient(circle at 100% 0,var(--gold) 2px,transparent 3px),radial-gradient(circle at 0 100%,var(--gold) 2px,transparent 3px),radial-gradient(circle at 100% 100%,var(--gold) 2px,transparent 3px)}
+h1{margin:0;font-size:1.9rem;font-style:italic;font-weight:400}
+.g{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+p{margin:0}.sub{color:var(--mut);font-style:italic}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 0}.logo{flex:none;width:56px;height:56px}
+.card{background:linear-gradient(180deg,rgba(255,240,200,.05),transparent),rgba(16,13,9,.74);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:14px}
+label{display:block;margin:14px 0 6px;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+input,select{width:100%;font:inherit;color:var(--ink);background:rgba(29,24,16,.86);border:1px solid var(--line);border-radius:10px;padding:12px}
+button,.btn{font:inherit;color:inherit;background:rgba(29,24,16,.86);border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer;text-align:center;text-decoration:none;display:block;touch-action:manipulation}
+:is(button,input,select,a):focus-visible{outline:2px solid var(--a1);outline-offset:2px}
+button:active{transform:scale(.97)}button:disabled{opacity:.5;cursor:default}
+.cta{width:100%;margin-top:16px;border:0;color:var(--on);font-weight:700;font-size:1.1rem;letter-spacing:.04em;padding:16px;border-radius:12px;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 8px 28px rgba(201,164,92,.22)}
+.ghost{background:transparent}
+.tabs{display:flex;gap:8px}.tabs button{flex:1}
+.tabs [aria-pressed=true]{color:var(--on);border-color:transparent;font-weight:700;background:linear-gradient(135deg,var(--a1),var(--a2))}
+#msg{min-height:1.4em;margin-top:12px;color:var(--bad);font-size:.95rem}
+.cap{text-align:center;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mut);opacity:.7}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+td{padding:10px 6px;border-bottom:1px solid var(--line)}td:first-child{width:2.6em;color:var(--mut)}td:last-child{text-align:right;color:var(--a1)}
+tr.me td{background:rgba(201,164,92,.12)}
+.top{display:flex;align-items:center;gap:12px}.top h1{flex:1}.top .btn{padding:8px 12px}
+[hidden]{display:none!important}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0a08">
+<title>Mental Math — Ranking</title>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main>
+<div class="top"><a class="btn" href="jogo.html">‹ Jogar</a><h1 class="g">Ranking</h1></div>
+<div class="tabs" id="pd"><button data-p="day" aria-pressed="false">Hoje</button><button data-p="week" aria-pressed="false">Semana</button><button data-p="all" aria-pressed="true">Sempre</button></div>
+<select id="bd" aria-label="Escolha o ranking"></select>
+<div class="card"><table><tbody id="rows"></tbody></table><p class="sub" id="empty">Carregando…</p></div>
+<p class="cap">Principia Mathematica</p>
+</main>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const $=s=>document.querySelector(s);
+const MODES={sprint:'Sprint 60s',n30:'30 questões',daily:'Desafio do dia',surv:'Sobrevivência'},LV=['Fácil','Médio','Difícil','Expert'],NM={'!':'n!','²':'x²','^':'xⁿ'};
+const day=()=>{try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'})}catch(e){return new Date().toISOString().slice(0,10)}};
+const bk=c=>c.mode+'|'+(c.mode==='daily'?day()+'|':'')+c.lvl+'|'+(c.dec?1:0)+'|'+c.ops.join('');
+const label=b=>{const p=b.split('|'),m=p[0],d=m==='daily'?p[1]:'',r=p.slice(m==='daily'?2:1);return (MODES[m]||m)+(d?' '+d.slice(8)+'/'+d.slice(5,7):'')+' · '+(LV[r[0]-1]||'')+' · '+[...(r[2]||'')].map(o=>NM[o]||o).join(' ')+(r[1]==='1'?' · decimais':'')};
+const fmt=(b,s)=>{const m=b.split('|')[0];return m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',',')+'s':s+' acertos'};
+let sb,period='all',me=null,cur='';
+async function init(){
+  if(!window.MM||/^COLE/.test(MM.key)||!window.supabase){$('#empty').textContent='Configuração pendente: falta a chave pública em config.js.';return}
+  sb=supabase.createClient(MM.url,MM.key);
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){const {data}=await sb.from('profiles').select('nickname').eq('id',session.user.id).maybeSingle();me=data&&data.nickname}
+  try{cur=bk(JSON.parse(localStorage.getItem('calcmental')).cfg)}catch(e){}
+  const {data:bl}=await sb.rpc('board_list');
+  const boards=(bl||[]).map(x=>x.board);
+  if(cur&&!boards.includes(cur))boards.unshift(cur);
+  if(!cur&&boards.length)cur=boards[0];
+  const s=$('#bd');s.innerHTML='';
+  boards.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=label(b);s.appendChild(o)});
+  if(cur)s.value=cur;
+  load();
+}
+async function load(){
+  const t=$('#rows');t.innerHTML='';
+  if(!cur){$('#empty').textContent='Ainda ninguém jogou. Seja o primeiro!';return}
+  const {data,error}=await sb.rpc('leaderboard',{p_board:cur,p_period:period});
+  if(error){$('#empty').textContent='Não foi possível carregar o ranking.';return}
+  $('#empty').textContent=data.length?'':'Ninguém pontuou neste período ainda.';
+  data.forEach(r=>{
+    const tr=document.createElement('tr');if(r.nickname===me)tr.className='me';
+    [(['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos),r.nickname,fmt(cur,r.score)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
+    t.appendChild(tr);
+  });
+}
+$('#pd').onclick=e=>{const b=e.target.closest('button');if(!b)return;period=b.dataset.p;[...$('#pd').children].forEach(x=>x.setAttribute('aria-pressed',x===b));load()};
+$('#bd').onchange=e=>{cur=e.target.value;load()};
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0a08">
+<title>Mental Math — Entrar</title>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main>
+<header class="brand"><svg class="logo" viewBox="0 0 56 56" aria-hidden="true"><path d="M28 8 48 44H8Z" fill="rgba(236,208,143,.08)" stroke="#ecd08f" stroke-width="1.5" stroke-linejoin="round"/><path d="M0 38 15.5 31H41" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><g stroke-width="1.6" stroke-linecap="round"><path d="M41 31 56 36" stroke="#ef4444"/><path d="M41 31 56 39.5" stroke="#f59e0b"/><path d="M41 31 56 43" stroke="#eab308"/><path d="M41 31 56 46.5" stroke="#22c55e"/><path d="M41 31 56 50" stroke="#3b82f6"/><path d="M41 31 56 53.5" stroke="#8b5cf6"/></g></svg><div><h1 class="g">Mental Math</h1><p class="sub">Entre para aparecer no ranking.</p></div></header>
+<div class="card">
+<div class="tabs"><button type="button" id="t1" aria-pressed="true">Entrar</button><button type="button" id="t2" aria-pressed="false">Criar conta</button></div>
+<form id="f">
+<div id="nk" hidden><label for="nick">Apelido</label><input id="nick" maxlength="16" autocomplete="nickname" placeholder="3 a 16: letras, números, _ . -"></div>
+<label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required>
+<label for="pw">Senha</label><input id="pw" type="password" minlength="8" autocomplete="current-password" required placeholder="mínimo de 8 caracteres">
+<p id="msg" role="alert"></p>
+<button class="cta" id="go">Entrar</button>
+</form>
+</div>
+<button type="button" class="ghost" id="guest">Jogar como convidado</button>
+<p class="cap">Principia Mathematica</p>
+</main>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const $=s=>document.querySelector(s),msg=t=>$('#msg').textContent=t;
+let mode='in',sb;
+try{if(!window.MM||/^COLE/.test(MM.key))throw 0;sb=supabase.createClient(MM.url,MM.key)}
+catch(e){msg('Configuração pendente: falta a chave pública do Supabase em config.js.');$('#go').disabled=true}
+if(sb)sb.auth.getSession().then(({data})=>{if(data.session)location.replace('jogo.html')});
+function tab(m){mode=m;$('#t1').setAttribute('aria-pressed',m==='in');$('#t2').setAttribute('aria-pressed',m==='up');$('#nk').hidden=m==='in';$('#go').textContent=m==='in'?'Entrar':'Criar conta';$('#pw').autocomplete=m==='in'?'current-password':'new-password';msg('')}
+$('#t1').onclick=()=>tab('in');$('#t2').onclick=()=>tab('up');
+const ERR={'Invalid login credentials':'E-mail ou senha incorretos.','User already registered':'Este e-mail já está cadastrado.','Email not confirmed':'Confirme seu e-mail antes de entrar.'};
+$('#f').onsubmit=async e=>{
+  e.preventDefault();if(!sb)return;const b=$('#go');b.disabled=true;msg('');
+  try{
+    const email=$('#em').value.trim(),password=$('#pw').value;
+    if(mode==='up'){
+      const nick=$('#nick').value.trim();
+      if(!/^[A-Za-z0-9_.-]{3,16}$/.test(nick))return msg('Apelido: 3 a 16 caracteres (letras, números, _ . -).');
+      const {data:free}=await sb.rpc('nickname_free',{p_nick:nick});
+      if(free===false)return msg('Esse apelido já está em uso.');
+      const {data,error}=await sb.auth.signUp({email,password,options:{data:{nickname:nick}}});
+      if(error)throw error;
+      if(!data.session)return msg('Conta criada! Confirme o e-mail para entrar.');
+    }else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
+    location.href='jogo.html';
+  }catch(x){msg(ERR[x.message]||x.message||'Erro inesperado.')}
+  finally{b.disabled=false}
+};
+$('#guest').onclick=()=>{sessionStorage.setItem('mm_guest','1');location.href='jogo.html'};
+</script>
+</body>
+</html>
