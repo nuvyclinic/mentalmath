@@ -1,9 +1,7 @@
-# Mental Math — site (GitHub Pages + Supabase)
-
-Arquivos: `index.html` (login), `jogo.html` (jogo), `ranking.html`, `site.css`, `config.js`, `bg.jpg`.
-
-1. Em `config.js`, troque `COLE_AQUI_A_CHAVE_PUBLICA` pela chave **publishable** (`sb_publishable_...`) do Supabase
-   (Project Settings > API Keys). Nunca use a chave secret/service_role.
-2. Envie todos os arquivos para a raiz do repositório e ative o GitHub Pages (Settings > Pages > Deploy from a branch > main / root).
-3. No Supabase: Authentication > Sign In / Providers > Email > desative "Confirm email";
-   Authentication > URL Configuration > Site URL = https://SEU_USUARIO.github.io/mentalmath/ (e o mesmo em Redirect URLs).
+Mental Math é um jogo interativo baseado na web projetado para aprimorar sua velocidade de raciocínio aritmético e concentração. Os jogadores resolvem desafios matemáticos sob limites de tempo rigorosos, acumulando pontos e competindo com jogadores do mundo inteiro.
+✨ Funcionalidades
+🎮 Jogabilidade Dinâmica: Geração de problemas matemáticos em tempo real com feedback visual instantâneo.
+🏆 Rankings Globais e Regionais: Dispute posições com jogadores de todo o mundo ou filtre por região.
+🔐 Contas e Apelidos: Autenticação segura alimentada pelo Supabase.
+📱 Design Responsivo e Acessível: Otimizado tanto para desktop (teclado físico) quanto para dispositivos móveis (teclado numérico na tela).
+🌍 Preparado para Multilíngue: Arquitetura estruturada para localização global (PT, EN, ES e mais).
