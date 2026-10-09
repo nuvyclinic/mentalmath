@@ -9,31 +9,34 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="Mental Math: treine cálculo mental contra o relógio, faça o Desafio do dia e dispute o ranking.">
-<title>Mental Math — Ranking</title>
+<title data-i18n="t_rank">Mental Math — Ranking</title>
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="pc.css" media="(min-width: 1200px)">
 </head>
 <body class="pg-rank">
 <main>
-<div class="top"><a class="btn" href="jogo.html">‹ Jogar</a><h1 class="g">Ranking</h1></div>
-<div class="tabs" id="pd"><button data-p="day" aria-pressed="false">Hoje</button><button data-p="week" aria-pressed="false">Semana</button><button data-p="all" aria-pressed="true">Sempre</button></div>
-<select id="bd" aria-label="Escolha o ranking"></select>
-<div class="card"><table><tbody id="rows"></tbody></table><p class="sub" id="empty">Carregando…</p></div>
+<div class="top"><a class="btn" href="jogo.html" data-i18n="play_back"></a><h1 class="g" data-i18n="ranking"></h1></div>
+<div class="tabs" id="pd"><button data-p="day" aria-pressed="false" data-i18n="p_day"></button><button data-p="week" aria-pressed="false" data-i18n="p_week"></button><button data-p="all" aria-pressed="true" data-i18n="p_all"></button></div>
+<select id="bd" data-i18n-aria="pick_board"></select>
+<div class="card"><table><tbody id="rows"></tbody></table><p class="sub" id="empty" data-i18n="loading"></p></div>
+<select class="lang"></select>
 <p class="cap">Principia Mathematica</p>
 </main>
+<script src="i18n.js"></script>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script src="vendor/supabase.js"></script>
 <script src="mm.js"></script>
 <script>
-const $=s=>document.querySelector(s);
-const MODES={sprint:'Sprint 60s',n30:'30 questões',daily:'Desafio do dia',surv:'Sobrevivência'},LV=['Fácil','Médio','Difícil','Expert'],NM={'!':'n!','²':'x²','^':'xⁿ'};
+L.apply();
+const t=L.t,$=s=>document.querySelector(s);
+const MODES={sprint:t('r_sprint'),n30:t('m_n30'),daily:t('m_daily'),surv:t('m_surv')},LV=[1,2,3,4].map(i=>t('lv'+i)),NM={'!':'n!','²':'x²','^':'xⁿ'};
 const day=()=>{try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'})}catch(e){return new Date().toISOString().slice(0,10)}};
 const bk=c=>c.mode+'|'+(c.mode==='daily'?day()+'|':'')+c.lvl+'|'+(c.dec?1:0)+'|'+c.ops.join('');
-const label=b=>{const p=b.split('|'),m=p[0],d=m==='daily'?p[1]:'',r=p.slice(m==='daily'?2:1);return (MODES[m]||m)+(d?' '+d.slice(8)+'/'+d.slice(5,7):'')+' · '+(LV[r[0]-1]||'')+' · '+[...(r[2]||'')].map(o=>NM[o]||o).join(' ')+(r[1]==='1'?' · decimais':'')};
-const fmt=(b,s)=>{const m=b.split('|')[0];return m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',',')+'s':s+' acertos'};
+const label=b=>{const p=b.split('|'),m=p[0],d=m==='daily'?p[1]:'',r=p.slice(m==='daily'?2:1);return (MODES[m]||m)+(d?' '+L.dm(d):'')+' · '+(LV[r[0]-1]||'')+' · '+[...(r[2]||'')].map(o=>NM[o]||o).join(' ')+(r[1]==='1'?' · '+t('decimals'):'')};
+const fmt=(b,s)=>{const m=b.split('|')[0];return m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',L.dec)+'s':L.n('hits',s)};
 let sb,period='all',me=null,cur='';
 async function init(){
-  try{if(!window.MMclient)throw new Error('Falta o arquivo mm.js no repositório.');sb=MMclient()}catch(e){$('#empty').textContent=e.message;return}
+  try{if(!window.MMclient)throw new Error(t('e_mm'));sb=MMclient()}catch(e){$('#empty').textContent=e.message;return}
   const {data:{session}}=await sb.auth.getSession();
   if(session){const {data}=await sb.from('profiles').select('nickname').eq('id',session.user.id).maybeSingle();me=data&&data.nickname}
   try{cur=bk(JSON.parse(localStorage.getItem('calcmental')).cfg)}catch(e){}
@@ -48,10 +51,10 @@ async function init(){
 }
 async function load(){
   const t=$('#rows');t.innerHTML='';
-  if(!cur){$('#empty').textContent='Ainda ninguém jogou. Seja o primeiro!';return}
+  if(!cur){$('#empty').textContent=t('nobody');return}
   const {data,error}=await sb.rpc('leaderboard',{p_board:cur,p_period:period});
-  if(error){$('#empty').textContent='Não foi possível carregar o ranking.';return}
-  $('#empty').textContent=data.length?'':'Ninguém pontuou neste período ainda.';
+  if(error){$('#empty').textContent=t(navigator.onLine?'rank_fail':'rank_offline');return}
+  $('#empty').textContent=data.length?'':t('nobody_period');
   data.forEach(r=>{
     const tr=document.createElement('tr');if(r.nickname===me)tr.className='me';
     [(['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos),r.nickname,fmt(cur,r.score)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});

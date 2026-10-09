@@ -1,0 +1,14 @@
+{
+  "appId": "com.nuvyclinic.mentalmath",
+  "appName": "Mental Math",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0c0a08"
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}

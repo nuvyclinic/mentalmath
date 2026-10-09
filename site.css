@@ -27,3 +27,4 @@ tr.me td{background:rgba(201,164,92,.12)}
 .top{display:flex;align-items:center;gap:12px}.top h1{flex:1}.top .btn{padding:8px 12px}
 [hidden]{display:none!important}
 .pitch{display:none}
+select.lang{width:auto;align-self:center;font-size:.85rem;color:var(--mut);padding:6px 10px}
