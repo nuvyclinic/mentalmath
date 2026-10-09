@@ -7,6 +7,8 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Mental Math: treine cálculo mental contra o relógio, faça o Desafio do dia e dispute o ranking.">
 <title>Mental Math</title>
 <style>
 :root{color-scheme:dark;--bg:#0c0a08;--sf:#151109;--s2:#1d1810;--ink:#e6d9b8;--mut:#a09068;--line:#4a3d24;--gold:#c9a45c;--a1:#ecd08f;--a2:#b8893a;--on:#1a1207;--ok:#7ccf6a;--bad:#e5534b;--sp:linear-gradient(90deg,#8b3fd6,#3b6be0,#2fb4e0,#3fbf5f,#f2d13c,#f08a24,#e5322d);--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"DejaVu Serif",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -133,6 +135,7 @@ button:disabled{opacity:.35;cursor:default}
 <div class="stats" id="eg"></div>
 <div class="card" id="rv"></div>
 <button class="cta" id="again">Jogar de novo</button>
+<button id="share">Compartilhar resultado</button>
 <a class="lk" href="ranking.html">Ver ranking</a>
 <button class="ghost" id="back">Voltar ao início</button>
 </section>
@@ -147,7 +150,8 @@ MU=[[[2,9],[2,9]],[[11,99],[2,9]],[[11,29],[11,29]],[[11,99],[11,99]]],
 FN=[[4,6],[5,7],[6,9],[7,10]];
 let cfg={ops:['+','−'],lvl:2,mode:'sprint',dec:false,snd:true},rec={},S;
 try{const d=JSON.parse(localStorage.getItem('calcmental')||'{}');Object.assign(cfg,d.cfg);rec=d.rec||{}}catch(e){}
-if(!Array.isArray(cfg.ops)||!cfg.ops.length)cfg.ops=['+'];
+if(!Array.isArray(cfg.ops))cfg.ops=[];
+cfg.ops=OPS.filter(o=>cfg.ops.includes(o));if(!cfg.ops.length)cfg.ops=['+'];
 if(!MODES[cfg.mode])cfg.mode='sprint';
 cfg.lvl=Math.min(4,Math.max(1,+cfg.lvl||2));cfg.dec=!!cfg.dec;cfg.snd=cfg.snd!==false;
 const save=()=>{try{localStorage.setItem('calcmental',JSON.stringify({cfg,rec}))}catch(e){}};
@@ -304,6 +308,9 @@ function end(msg){
   $('#eg').innerHTML=[['Acertos',S.ok],['Erros',S.err],['Precisão',tot?Math.round(S.ok/tot*100)+'%':'—'],['Tempo médio por acerto',avg?cm(avg.toFixed(2))+'s':'—'],['Maior sequência',S.ms],['Dicas usadas',S.hints]].map(([a,b])=>`<div><b>${b}</b><span>${a}</span></div>`).join('');
   $('#rv').innerHTML=S.rv.length?'<h2>Para revisar</h2>'+S.rv.slice(0,5).map(r=>`<div>${r}</div>`).join(''):'';
   $('#rv').style.display=S.rv.length?'':'none';
+  const dt=cfg.mode==='daily'?' '+day().slice(8)+'/'+day().slice(5,7):'',u=/^https?:/.test(location.protocol)?'\n'+location.href.replace(/[^/]*([?#].*)?$/,''):'';
+  S.share='Mental Math · '+MODES[cfg.mode][1]+dt+' · '+LV[cfg.lvl-1]+' · '+cfg.ops.map(o=>LB[o]||o).join(' ')+(cfg.dec?' · decimais':'')+'\n'+(done?'⏱ '+fmt(sc)+' · ':'')+S.ok+(S.ok==1?' acerto':' acertos')+', '+S.err+(S.err==1?' erro':' erros')+(nr?' · novo recorde!':'')+u;
+  $('#share').textContent='Compartilhar resultado';
   $('#sent').textContent='';
   show('end');
   if(window.MMsubmit)window.MMsubmit({mode:cfg.mode,board:bk(),score:sc,ok:S.ok,err:S.err,valid:t?done:S.ok>0});
@@ -311,7 +318,12 @@ function end(msg){
 
 $('#pad').innerHTML=[1,2,3,4,5,6,7,8,9,',',0,'b'].map(k=>`<button data-k="${k}" aria-label="${k=='b'?'Apagar':k==','?'Vírgula':k}">${k=='b'?'⌫':k}</button>`).join('');
 $('#pad').onpointerdown=e=>{const b=e.target.closest('button');if(b){e.preventDefault();press(b.dataset.k)}};
-$('#skip').onclick=()=>press('s');$('#hb').onclick=useHint;
+$('#skip').onclick=()=>press('s');
+$('#share').onclick=async()=>{
+  if(!S||!S.share)return;const b=$('#share');
+  try{if(navigator.share){await navigator.share({text:S.share});return}await navigator.clipboard.writeText(S.share);b.textContent='Copiado ✓'}
+  catch(e){if(e.name!=='AbortError')b.textContent='Não foi possível compartilhar'}
+};$('#hb').onclick=useHint;
 $('#go').onclick=$('#again').onclick=start;
 $('#back').onclick=$('#quit').onclick=()=>{if(S){S.over=true;cancelAnimationFrame(S.raf)}ui();show('home')};
 addEventListener('keydown',e=>{
@@ -326,7 +338,7 @@ addEventListener('keydown',e=>{
 ui();
 </script>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 <script src="mm.js"></script>
 <script>
 (async()=>{

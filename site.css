@@ -18,7 +18,8 @@ button:active{transform:scale(.97)}button:disabled{opacity:.5;cursor:default}
 .ghost{background:transparent}
 .tabs{display:flex;gap:8px}.tabs button{flex:1}
 .tabs [aria-pressed=true]{color:var(--on);border-color:transparent;font-weight:700;background:linear-gradient(135deg,var(--a1),var(--a2))}
-#msg{min-height:1.4em;margin-top:12px;color:var(--bad);font-size:.95rem}
+#msg{min-height:1.4em;margin-top:12px;color:var(--bad);font-size:.95rem}#msg.ok{color:var(--ok)}
+.link{width:100%;margin-top:10px;padding:6px;border:0;background:none;color:var(--mut);font-style:italic;font-size:.9rem;text-decoration:underline;text-underline-offset:3px}
 .cap{text-align:center;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mut);opacity:.7}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 td{padding:10px 6px;border-bottom:1px solid var(--line)}td:first-child{width:2.6em;color:var(--mut)}td:last-child{text-align:right;color:var(--a1)}
