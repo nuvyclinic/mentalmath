@@ -4,3 +4,5 @@ android/
 ios/
 *.jks
 *.keystore
+public/
+.vercel/

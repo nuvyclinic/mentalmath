@@ -127,5 +127,5 @@ O identificador do app é `com.nuvyclinic.mentalmath` (`capacitor.config.json`).
 
 O botão "Esqueci minha senha" envia um e-mail pelo Supabase com um link de volta para `index.html`. Para funcionar:
 
-1. Cadastre o endereço do site em **Supabase → Authentication → URL Configuration → Redirect URLs** (ex.: `https://seu-dominio/index.html`).
-2. Para o botão aparecer também no app Android, preencha `site` em `config.js` com o endereço público do jogo (ex.: `"https://seu-dominio/"`). O link do e-mail abre no navegador, e a nova senha vale no app.
+1. Cadastre o endereço do site em **Supabase → Authentication → URL Configuration → Redirect URLs** (ex.: `https://mtlmath.vercel.app/index.html`).
+2. Para o botão aparecer também no app Android, preencha `site` em `config.js` com o endereço público do jogo (hoje: `"https://mtlmath.vercel.app/"`). O link do e-mail abre no navegador, e a nova senha vale no app.

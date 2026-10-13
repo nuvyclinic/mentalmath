@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "echo 'Site estático: o build não usa dependências do npm'",
+  "buildCommand": "node scripts/build.mjs",
+  "outputDirectory": "public"
+}
