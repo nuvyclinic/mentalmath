@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0a08">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title data-i18n="lp_title">Mental Math — Treine cálculo mental</title>
+<meta name="description" content="Mental Math: treine cálculo mental contra o relógio. Baixe o app para Android ou jogue no navegador.">
+<meta property="og:title" content="Mental Math">
+<meta property="og:description" content="Treine cálculo mental contra o relógio. 9 operações, Desafio do dia e ranking.">
+<meta property="og:image" content="img/shot-game.jpg">
+<style>
+:root{color-scheme:dark;--bg:#050403;--ink:#e6d9b8;--mut:#a09068;--line:#4a3d24;--gold:#c9a45c;--a1:#ecd08f;--a2:#b8893a;--on:#1a1207;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"DejaVu Serif",serif}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:linear-gradient(180deg,rgba(5,4,3,.55),rgba(5,4,3,.92) 70vh,var(--bg)),url(bg.jpg) center top/cover no-repeat fixed,var(--bg);color:var(--ink);font:17px/1.55 var(--serif);-webkit-tap-highlight-color:transparent}
+@media(min-width:900px){body{background-image:linear-gradient(180deg,rgba(5,4,3,.6),rgba(5,4,3,.93) 80vh,var(--bg)),url(bg-pc.jpg)}}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(2.6rem,9vw,4.4rem);font-style:italic;font-weight:400;line-height:1.05;letter-spacing:-.01em}
+h2{font-size:.72rem;font-weight:400;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;text-align:center}
+.g{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+section{padding:56px 0}
+
+/* topo */
+.hero{display:grid;gap:40px;align-items:center;padding:calc(36px + env(safe-area-inset-top,0px)) 0 48px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:64px;height:64px;flex:none}
+.tag{font-size:clamp(1.25rem,4.5vw,1.6rem);font-style:italic;color:var(--a1);margin-top:18px}
+.lead{color:var(--mut);margin-top:12px;max-width:34em}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:14px;font:inherit;text-decoration:none;color:var(--ink);background:rgba(29,24,16,.86);border:1px solid var(--line);transition:transform .1s,border-color .2s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:2px solid var(--a1);outline-offset:3px}
+.btn small{display:block;font-size:.78rem;opacity:.75;font-style:italic}
+.btn.cta{color:var(--on);border:0;font-weight:700;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 10px 32px rgba(201,164,92,.25)}
+.btn.cta small{font-weight:400}
+.btn svg{width:26px;height:26px;flex:none}
+@media(hover:hover){.btn:not(.cta):hover{border-color:var(--gold)}}
+.ios{margin-top:14px;font-size:.9rem;font-style:italic;color:var(--mut);max-width:30em}
+.phone{justify-self:center;width:min(300px,78vw);aspect-ratio:390/844;border-radius:38px;padding:10px;background:#0b0907;border:1px solid var(--line);box-shadow:0 0 0 1px rgba(201,164,92,.25),0 40px 90px rgba(0,0,0,.75),0 0 80px rgba(201,164,92,.12)}
+.phone img{display:block;width:100%;height:100%;object-fit:cover;border-radius:29px}
+
+/* recursos */
+.feats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.feat{background:linear-gradient(180deg,rgba(255,240,200,.05),transparent),rgba(16,13,9,.78);border:1px solid var(--line);border-radius:14px;padding:20px}
+.feat b{display:block;font-size:1.2rem;font-style:italic;font-weight:400;color:var(--a1);margin-bottom:6px}
+.feat span.i{display:inline-grid;place-items:center;width:40px;height:40px;margin-bottom:12px;border-radius:10px;font-style:italic;font-weight:700;color:var(--on);background:linear-gradient(135deg,var(--a1),var(--a2))}
+.feat p{color:var(--mut);font-size:.95rem}
+
+/* telas */
+.shots{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 16px;justify-content:safe center}
+.shots figure{margin:0;flex:none;width:min(230px,62vw);scroll-snap-align:center;text-align:center}
+.shots img{display:block;width:100%;height:auto;aspect-ratio:390/844;object-fit:cover;border-radius:22px;border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.shots figcaption{margin-top:10px;font-style:italic;color:var(--mut);font-size:.92rem}
+
+/* instalar */
+.how{max-width:640px;margin:0 auto}
+.how ol{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.how li{display:flex;gap:14px;align-items:flex-start;background:rgba(16,13,9,.78);border:1px solid var(--line);border-radius:12px;padding:14px 16px;counter-increment:s}
+.how li::before{content:counter(s);flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:700;color:var(--on);background:linear-gradient(135deg,var(--a1),var(--a2))}
+.how .note{margin-top:14px;font-size:.88rem;font-style:italic;color:var(--mut);text-align:center}
+
+/* fim */
+.end{text-align:center}
+.end p.big{font-size:clamp(1.5rem,5vw,2.1rem);font-style:italic}
+.end .btns{justify-content:center}
+footer{padding:28px 0 calc(28px + env(safe-area-inset-bottom,0px));text-align:center;border-top:1px solid var(--line);display:grid;gap:12px;justify-items:center}
+.cap{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mut);opacity:.7}
+select.lang{font:inherit;font-size:.85rem;color:var(--mut);background:rgba(29,24,16,.86);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+
+@media(min-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr) auto;min-height:92vh;padding-top:56px}
+  .phone{width:320px}
+  .feats{grid-template-columns:repeat(3,1fr)}
+  .logo{width:80px;height:80px}
+  .brand h1{font-size:4.6rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <div class="brand"><svg class="logo" viewBox="0 0 56 56" aria-hidden="true"><path d="M28 8 48 44H8Z" fill="rgba(236,208,143,.08)" stroke="#ecd08f" stroke-width="1.5" stroke-linejoin="round"/><path d="M0 38 15.5 31H41" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><g stroke-width="1.6" stroke-linecap="round"><path d="M41 31 56 36" stroke="#ef4444"/><path d="M41 31 56 39.5" stroke="#f59e0b"/><path d="M41 31 56 43" stroke="#eab308"/><path d="M41 31 56 46.5" stroke="#22c55e"/><path d="M41 31 56 50" stroke="#3b82f6"/><path d="M41 31 56 53.5" stroke="#8b5cf6"/></g></svg><h1 class="g">Mental Math</h1></div>
+    <p class="tag" data-i18n="lp_tag"></p>
+    <p class="lead" data-i18n="lp_lead"></p>
+    <div class="btns">
+      <a class="btn cta apk" href="#" download><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1ZM5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg><span><span data-i18n="lp_android"></span><small data-i18n="lp_android_sub"></small></span></a>
+      <a class="btn" href="index.html" data-i18n="lp_web"></a>
+    </div>
+    <p class="ios" id="ios" hidden data-i18n="lp_ios"></p>
+  </div>
+  <div class="phone"><img src="img/shot-game.jpg" alt="" width="390" height="844"></div>
+</header>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2 data-i18n="lp_feat"></h2>
+    <div class="feats">
+      <div class="feat"><span class="i">÷</span><b data-i18n="f_ops_t"></b><p data-i18n="f_ops_d"></p></div>
+      <div class="feat"><span class="i">60″</span><b data-i18n="f_modes_t"></b><p data-i18n="f_modes_d"></p></div>
+      <div class="feat"><span class="i">20</span><b data-i18n="f_daily_t"></b><p data-i18n="f_daily_d"></p></div>
+      <div class="feat"><span class="i">?</span><b data-i18n="f_hint_t"></b><p data-i18n="f_hint_d"></p></div>
+      <div class="feat"><span class="i">#1</span><b data-i18n="f_rank_t"></b><p data-i18n="f_rank_d"></p></div>
+      <div class="feat"><span class="i">∞</span><b data-i18n="f_off_t"></b><p data-i18n="f_off_d"></p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 data-i18n="lp_shots"></h2>
+    <div class="shots">
+      <figure><img src="img/shot-home.jpg" alt="" loading="lazy" width="390" height="844"><figcaption data-i18n="shot_home"></figcaption></figure>
+      <figure><img src="img/shot-game.jpg" alt="" loading="lazy" width="390" height="844"><figcaption data-i18n="shot_game"></figcaption></figure>
+      <figure><img src="img/shot-end.jpg" alt="" loading="lazy" width="390" height="844"><figcaption data-i18n="shot_end"></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="instalar">
+  <div class="wrap how">
+    <h2 data-i18n="lp_how"></h2>
+    <ol><li data-i18n="how1"></li><li data-i18n="how2"></li><li data-i18n="how3"></li></ol>
+    <p class="note" data-i18n="how_note"></p>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <p class="big g" data-i18n="lp_cta"></p>
+    <div class="btns">
+      <a class="btn cta apk" href="#" download><span data-i18n="lp_android"></span></a>
+      <a class="btn" href="index.html" data-i18n="lp_web"></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <select class="lang"></select>
+  <p class="cap">Principia Mathematica</p>
+</footer>
+
+<script src="i18n.js"></script>
+<script>
+// Endereço fixo do APK: sempre aponta para o arquivo da release mais recente no GitHub.
+const APK='https://github.com/nuvyclinic/mentalmath/releases/latest/download/mental-math.apk';
+L.apply();
+document.querySelectorAll('a.apk').forEach(a=>a.href=APK);
+// iPhone/iPad não instalam APK: mostra como adicionar à tela de início.
+if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))document.getElementById('ios').hidden=false;
+</script>
+</body>
+</html>

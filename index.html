@@ -29,6 +29,7 @@
 </form>
 </div>
 <button type="button" class="ghost" id="guest" data-i18n="guest_play"></button>
+<a class="link" id="getapp" href="app.html" data-i18n="get_app"></a>
 <select class="lang"></select>
 <p class="cap">Principia Mathematica</p>
 </main>
@@ -44,6 +45,7 @@ let mode='in',sb,recovery=/type=recovery/.test(location.hash);
 try{if(!window.MMclient)throw new Error(t('e_mm'));sb=MMclient()}
 catch(e){msg(e.message);$('#go').disabled=true}
 if(!navigator.onLine)msg(t('offline_login'));
+if(window.Capacitor)$('#getapp').hidden=true;
 // No app não existe endereço público próprio: o link do e-mail precisa apontar para o site (MM.site no config.js).
 const resetUrl=window.Capacitor?(window.MM&&MM.site?MM.site.replace(/\/?$/,'/index.html'):''):location.origin+location.pathname;
 if(!resetUrl)$('#fg').hidden=true;
