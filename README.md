@@ -29,6 +29,7 @@ python3 -m http.server 8000
 | `jogo.html` | Página do jogo (só a marcação) |
 | `game.js` / `game.css` | **Lógica e visual do jogo**: o único lugar para editar o jogo |
 | `online.js` | Conta, Top 5 e envio ao ranking (só no site e no app) |
+| `points.js` | Tabela de pontos por acerto do ranking geral |
 | `ranking.html` | Ranking por modo/nível, filtrado por hoje, semana ou sempre |
 | `i18n.js` | Todos os textos em português, inglês e espanhol |
 | `config.js` / `mm.js` | Chave pública do Supabase e criação do cliente |
@@ -38,10 +39,11 @@ python3 -m http.server 8000
 | `mental-math.html` | **Gerado automaticamente**: o jogo inteiro em um arquivo só, sem login nem ranking |
 | `scripts/build.mjs` | Gera `mental-math.html` e a pasta `www/` do app |
 | `capacitor.config.json`, `assets/` | Configuração, ícone e tela de abertura do app Android |
+| `supabase/migrations/` | Mudanças do banco de dados (funções do ranking) |
 
 ### Editou o jogo? Rode o build
 
-`mental-math.html` é gerado a partir de `jogo.html`, `game.js`, `game.css` e `i18n.js`. Depois de mudar qualquer um deles:
+`mental-math.html` é gerado a partir de `jogo.html`, `game.js`, `game.css`, `points.js` e `i18n.js`. Depois de mudar qualquer um deles:
 
 ```bash
 npm install    # só na primeira vez
@@ -49,6 +51,35 @@ npm run build
 ```
 
 e faça commit do `mental-math.html` atualizado. O GitHub Actions avisa (falha) se você esquecer.
+
+## 🏆 Ranking e pontos
+
+O ranking tem duas visões:
+
+- **Geral:** soma dos pontos de todas as partidas no período (hoje, semana ou sempre).
+- **Por modo:** o melhor resultado de cada jogador numa configuração (modo, nível e operações).
+
+Os 4 primeiros de cada ranking recebem os títulos **Arquimedes**, **Isaac Newton**, **Carl Friedrich Gauss** e **Leonhard Euler**.
+
+**Pontos da partida = acertos × pontos por acerto × precisão** (acertos ÷ tentativas). O valor de cada acerto acompanha o tempo típico da conta, com bônus nos níveis difíceis:
+
+| | Fácil | Médio | Difícil | Expert |
+|---|---:|---:|---:|---:|
+| + | 25 | 65 | 150 | 375 |
+| − | 25 | 70 | 160 | 390 |
+| × | 20 | 65 | 225 | 600 |
+| ÷ | 25 | 65 | 225 | 600 |
+| x² | 10 | 55 | 125 | 225 |
+| √ | 10 | 45 | 100 | 180 |
+| % | 60 | 110 | 200 | 450 |
+| xⁿ | 20 | 65 | 200 | 375 |
+| n! | 20 | 55 | 150 | 270 |
+
+- Com várias operações, vale a média. Decimais: +50% nas contas + − × ÷.
+- Desafio do dia: +20%, e conta só a melhor partida de cada dia (as questões se repetem). Sobrevivência: +30%.
+- Uma trava descarta valores impossíveis (mais de 10× mais rápido que o normal).
+
+A conta existe em dois lugares que precisam ficar iguais: `points.js` (para mostrar ao jogador) e a função `run_points` em `supabase/migrations/` (que monta o ranking). Para mudar a tabela, mude os dois e aplique a migração no Supabase.
 
 ## 🌍 Idiomas
 

@@ -12,57 +12,218 @@
 <title data-i18n="t_rank">Mental Math — Ranking</title>
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="pc.css" media="(min-width: 1200px)">
+<style>
+/* filtros */
+.seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:rgba(16,13,9,.82);border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:9px 6px;font-size:.95rem}
+.seg [aria-pressed=true]{color:var(--on);font-weight:700;background:linear-gradient(135deg,var(--a1),var(--a2))}
+.cats{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:2px 20px 6px;scroll-padding:0 20px;scroll-snap-type:x proximity;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;display:flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;border-radius:999px;scroll-snap-align:start;white-space:nowrap}
+.cats .bd{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;font-style:italic;font-weight:700;font-size:.82rem;background:rgba(10,8,6,.9);border:1px solid var(--line)}
+.cats [aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);color:var(--a1)}
+.cats [aria-pressed=true] .bd{color:var(--on);border-color:transparent;background:linear-gradient(135deg,var(--a1),var(--a2))}
+.lbl{margin:10px 0 6px;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{display:inline-block;padding:7px 13px;border-radius:999px;font-size:.92rem}
+.chips [aria-pressed=true]{color:var(--on);border-color:transparent;font-weight:700;background:linear-gradient(135deg,var(--a1),var(--a2))}
+.chips .dim:not([aria-pressed=true]){opacity:.45}
+.info{margin-top:10px;color:var(--mut);font-style:italic;font-size:.9rem}
+/* pódio: os 4 títulos */
+.board{display:flex;flex-direction:column;gap:10px}
+.podium{display:grid;gap:8px}
+.r1{--mg:linear-gradient(135deg,#fbecc0,#c9a45c 55%,#8a6424);--rc:#ecd08f}
+.r2{--mg:linear-gradient(135deg,#f4f6f8,#b8c0c9 55%,#6f7882);--rc:#d6dce3}
+.r3{--mg:linear-gradient(135deg,#f6d2b0,#c27c45 55%,#7a4520);--rc:#e3a874}
+.r4{--mg:linear-gradient(135deg,#e6ddff,#9a86e0 55%,#53408f);--rc:#c4b6f7}
+.medal{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;font-size:1.5rem;font-style:italic;font-weight:700;color:#1a1207;background:var(--mg);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),inset 0 -6px 12px rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.45)}
+.ttl{display:block;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rc);line-height:1.35}
+.ttl small{display:block;color:var(--mut);letter-spacing:.06em;text-transform:none;font-size:1em}
+.nm{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc{color:var(--a1);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sc small{display:block;color:var(--mut);font-size:.75rem}
+.champ{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid rgba(236,208,143,.55);background:radial-gradient(120% 160% at 0 0,rgba(236,208,143,.2),transparent 60%),rgba(16,13,9,.86);box-shadow:0 12px 36px rgba(201,164,92,.16)}
+.champ .medal{width:64px;height:64px;font-size:1.9rem}
+.champ .nm{font-size:1.35rem;font-style:italic;color:#f3e7c6}
+.champ .sc{text-align:right;font-size:1.15rem}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pc{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;text-align:center;padding:14px 8px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(16,13,9,.84)}
+.pc .ttl{min-height:2.8em}
+.pc .nm{max-width:100%;font-style:italic}
+.pc .sc{font-size:.9rem}
+.vac .medal{filter:grayscale(1);opacity:.4}
+.vac .nm{color:var(--mut);font-style:italic}
+.vac .sc{color:var(--mut);font-size:.75rem;white-space:normal}
+.me{outline:2px solid var(--a1);outline-offset:-2px}
+.tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;font-size:.62rem;font-style:normal;font-weight:700;letter-spacing:.04em;color:var(--on);background:var(--a1);vertical-align:3px}
+/* demais posições */
+.rest{list-style:none;margin:0;padding:0 4px;border-radius:12px;background:rgba(16,13,9,.8);border:1px solid var(--line)}
+.rest:empty{display:none}
+.rest li{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;gap:8px;align-items:center;padding:11px 8px;border-bottom:1px solid var(--line)}
+.rest li:last-child{border-bottom:0}
+.rest .n{color:var(--mut);font-variant-numeric:tabular-nums}
+.empty:empty{display:none}
+.empty{text-align:center}
+/* como funcionam os pontos */
+.how{border:1px solid var(--line);border-radius:12px;background:rgba(16,13,9,.8);padding:4px 14px}
+.how summary{cursor:pointer;padding:10px 0;color:var(--a1);font-style:italic}
+.how p{margin:8px 0;color:var(--mut);font-size:.9rem}
+.how table{margin:6px 0 10px;font-size:.85rem}
+.how th{font-weight:400;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);text-align:right;padding:6px 4px;border-bottom:1px solid var(--line)}
+.how td{padding:6px 4px;text-align:right;color:var(--ink)}
+.how td:first-child,.how th:first-child{width:auto;text-align:left;color:var(--a1)}
+.how td:last-child{color:var(--ink)}
+@media(min-width:1200px){
+  .pg-rank main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px 40px;align-content:start;max-width:1100px}
+  .pg-rank .top{grid-column:1/-1}
+  .pg-rank .filters{grid-column:1;align-self:start;position:sticky;top:28px}
+  .pg-rank .board{grid-column:2;grid-row:2/span 3}
+  .pg-rank .cats{flex-direction:column;overflow:visible;margin:12px 0 0;padding:0}
+  .pg-rank .cats button{width:100%}
+  .pg-rank .lang,.pg-rank .cap{grid-column:1/-1;justify-self:center}
+  .champ{padding:20px 22px}
+  .champ .medal{width:78px;height:78px;font-size:2.3rem}
+  .champ .nm{font-size:1.7rem}
+  .medal{width:60px;height:60px;font-size:1.75rem}
+  .pc{padding:18px 10px 16px}
+  .rest li{padding:13px 10px;font-size:1.05rem}
+}
+</style>
 </head>
 <body class="pg-rank">
 <main>
 <div class="top"><a class="btn" href="jogo.html" data-i18n="play_back"></a><h1 class="g" data-i18n="ranking"></h1></div>
-<div class="tabs" id="pd"><button data-p="day" aria-pressed="false" data-i18n="p_day"></button><button data-p="week" aria-pressed="false" data-i18n="p_week"></button><button data-p="all" aria-pressed="true" data-i18n="p_all"></button></div>
-<select id="bd" data-i18n-aria="pick_board"></select>
-<div class="card"><table><tbody id="rows"></tbody></table><p class="sub" id="empty" data-i18n="loading"></p></div>
+<div class="filters">
+  <div class="seg" id="pd"><button type="button" data-p="day" aria-pressed="false" data-i18n="p_day"></button><button type="button" data-p="week" aria-pressed="false" data-i18n="p_week"></button><button type="button" data-p="all" aria-pressed="true" data-i18n="p_all"></button></div>
+  <div class="cats" id="cat"></div>
+  <div id="sub" hidden>
+    <p class="lbl" data-i18n="h_lvl"></p>
+    <div class="chips" id="lvs"></div>
+    <p class="lbl" id="lbl-vars" data-i18n="h_ops"></p>
+    <div class="chips" id="vars"></div>
+  </div>
+  <p class="info" id="info"></p>
+</div>
+<div class="board" aria-live="polite">
+  <div class="podium" id="podium"></div>
+  <ol class="rest" id="rows"></ol>
+  <p class="sub empty" id="empty" data-i18n="loading"></p>
+  <details class="how" id="how"><summary data-i18n="how_pts"></summary>
+    <p data-i18n="hp_intro"></p>
+    <table id="howt" data-i18n-aria="hp_table"></table>
+    <p data-i18n="hp_dec"></p><p data-i18n="hp_mode"></p><p data-i18n="hp_titles"></p>
+  </details>
+</div>
 <select class="lang"></select>
 <p class="cap">Principia Mathematica</p>
 </main>
 <script src="i18n.js"></script>
+<script src="points.js"></script>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
 <script src="mm.js"></script>
 <script>
 L.apply();
-const t=L.t,$=s=>document.querySelector(s);
-const MODES={sprint:t('r_sprint'),n30:t('m_n30'),daily:t('m_daily'),surv:t('m_surv')},LV=[1,2,3,4].map(i=>t('lv'+i)),NM={'!':'n!','²':'x²','^':'xⁿ'};
+const t=L.t,$=s=>document.querySelector(s),P=window.MMpoints;
+const CATS=['pts','sprint','n30','daily','surv'],BADGE={pts:'★',sprint:'60″',n30:'30',daily:'20',surv:'∞'},
+NAME={pts:t('r_general'),sprint:t('r_sprint'),n30:t('m_n30'),daily:t('m_daily'),surv:t('m_surv')},
+LV=[1,2,3,4].map(i=>t('lv'+i)),NM={'!':'n!','²':'x²','^':'xⁿ'},
+// Emblemas dos títulos: π (Arquimedes), ẋ (fluxões de Newton), ∑ (Gauss), e (Euler)
+SYM=['π','ẋ','∑','e'];
+const nf=new Intl.NumberFormat(L.lang==='pt'?'pt-BR':L.lang);
 const day=()=>{try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'})}catch(e){return new Date().toISOString().slice(0,10)}};
-const bk=c=>c.mode+'|'+(c.mode==='daily'?day()+'|':'')+c.lvl+'|'+(c.dec?1:0)+'|'+c.ops.join('');
-const label=b=>{const p=b.split('|'),m=p[0],d=m==='daily'?p[1]:'',r=p.slice(m==='daily'?2:1);return (MODES[m]||m)+(d?' '+L.dm(d):'')+' · '+(LV[r[0]-1]||'')+' · '+[...(r[2]||'')].map(o=>NM[o]||o).join(' ')+(r[1]==='1'?' · '+t('decimals'):'')};
-const fmt=(b,s)=>{const m=b.split('|')[0];return m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',L.dec)+'s':L.n('hits',s)};
-let sb,period='all',me=null,cur='';
-async function init(){
-  try{if(!window.MMclient)throw new Error(t('e_mm'));sb=MMclient()}catch(e){$('#empty').textContent=e.message;return}
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){const {data}=await sb.from('profiles').select('nickname').eq('id',session.user.id).maybeSingle();me=data&&data.nickname}
-  try{cur=bk(JSON.parse(localStorage.getItem('calcmental')).cfg)}catch(e){}
-  const {data:bl}=await sb.rpc('board_list');
-  const boards=(bl||[]).map(x=>x.board);
-  if(cur&&!boards.includes(cur))boards.unshift(cur);
-  if(!cur&&boards.length)cur=boards[0];
-  const s=$('#bd');s.innerHTML='';
-  boards.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=label(b);s.appendChild(o)});
-  if(cur)s.value=cur;
-  load();
+const parse=b=>{const p=String(b).split('|'),m=p[0],d=m==='daily'?p[1]||'':'',r=p.slice(m==='daily'?2:1);return{b:String(b),m,d,l:+r[0]||0,dec:r[1]==='1',ops:r[2]||''}};
+const keyOf=c=>c.mode+'|'+(c.mode==='daily'?day()+'|':'')+c.lvl+'|'+(c.dec?1:0)+'|'+c.ops.join('');
+const opsLabel=c=>[...c.ops].map(o=>NM[o]||o).join(' ')+(c.dec?' · '+t('decimals'):'');
+const fmtScore=(m,s)=>m==='pts'?nf.format(s)+' pts':m==='n30'||m==='daily'?(s/1000).toFixed(1).replace('.',L.dec)+'s':L.n('hits',s);
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+let sb,me=null,period='all',cat='pts',lvl=2,board='',boards=[],mine=null,req=0;
+
+// Variações (operações/decimais/dia) já jogadas no modo e nível escolhidos.
+function variants(){
+  const list=boards.filter(b=>b.m===cat&&b.l===lvl);
+  for(const x of [mine,board&&parse(board)])
+    if(x&&x.m===cat&&x.l===lvl&&!list.some(b=>b.b===x.b))list.push(Object.assign({},x,{players:0}));
+  return list.sort((a,b)=>b.d.localeCompare(a.d)||b.players-a.players);
 }
-async function load(){
-  const t=$('#rows');t.innerHTML='';
-  if(!cur){$('#empty').textContent=t('nobody');return}
-  const {data,error}=await sb.rpc('leaderboard',{p_board:cur,p_period:period});
-  if(error){$('#empty').textContent=t(navigator.onLine?'rank_fail':'rank_offline');return}
-  $('#empty').textContent=data.length?'':t('nobody_period');
-  data.forEach(r=>{
-    const tr=document.createElement('tr');if(r.nickname===me)tr.className='me';
-    [(['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos),r.nickname,fmt(cur,r.score)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
-    t.appendChild(tr);
+function drawFilters(){
+  const cats=$('#cat');cats.innerHTML='';
+  CATS.forEach(k=>{const b=el('button');b.type='button';b.dataset.c=k;b.setAttribute('aria-pressed',cat===k);b.append(el('span','bd',BADGE[k]),el('span',null,NAME[k]));cats.append(b)});
+  $('#sub').hidden=cat==='pts';$('#how').hidden=cat!=='pts';
+  if(cat==='pts'){$('#info').textContent=t('info_pts');history.replaceState(null,'',location.pathname);return}
+  const lv=$('#lvs');lv.innerHTML='';
+  LV.forEach((n,i)=>{const b=el('button',boards.some(x=>x.m===cat&&x.l===i+1)?'':'dim',n);b.type='button';b.dataset.l=i+1;b.setAttribute('aria-pressed',lvl===i+1);lv.append(b)});
+  const vs=variants();
+  if(!vs.some(v=>v.b===board))board=((mine&&vs.find(v=>v.b===mine.b))||vs[0]||{}).b||'';
+  const w=$('#vars');w.innerHTML='';
+  vs.forEach(v=>{const b=el('button',null,(v.m==='daily'?(v.d===day()?t('p_day'):L.dm(v.d))+' · ':'')+opsLabel(v));b.type='button';b.dataset.b=v.b;b.setAttribute('aria-pressed',v.b===board);w.append(b)});
+  $('#lbl-vars').hidden=w.hidden=!vs.length;
+  const c=board&&parse(board);
+  $('#info').textContent=c?t('info_board',{p:nf.format(Math.round(P.perHit(c.l,c.dec,c.ops,c.m)))}):'';
+  history.replaceState(null,'',board?'#b='+encodeURIComponent(board):location.pathname);
+}
+function slot(i,r){
+  const big=i===0,c=el('div',(big?'champ':'pc')+' r'+(i+1)+(r?'':' vac')+(r&&r.nick===me?' me':''));
+  const md=el('div','medal',SYM[i]);md.setAttribute('aria-hidden','true');
+  const ttl=el('span','ttl',t('t'+(i+1)));ttl.append(el('small',null,t('pos'+(i+1))));
+  const nm=el('b','nm',r?r.nick:t('vacant'));if(r&&r.nick===me)nm.append(el('span','tag',t('you')));
+  const sc=el('span','sc',r?fmtScore(cat,r.score):t('vacant_sub'));
+  if(r&&cat==='pts')sc.append(el('small',null,L.n('runs',r.runs)));
+  if(big){const who=el('div');who.append(ttl,nm);c.append(md,who,sc)}else c.append(md,ttl,nm,sc);
+  return c;
+}
+function draw(rows){
+  const pod=$('#podium');pod.innerHTML='';
+  pod.append(slot(0,rows[0]));
+  const trio=el('div','trio');for(let i=1;i<4;i++)trio.append(slot(i,rows[i]));pod.append(trio);
+  const ol=$('#rows');ol.innerHTML='';
+  rows.slice(4).forEach(r=>{
+    const li=el('li',r.nick===me?'me':''),nm=el('span','nm',r.nick);if(r.nick===me)nm.append(el('span','tag',t('you')));
+    li.append(el('span','n','#'+r.pos),nm,el('span','sc',fmtScore(cat,r.score)));ol.append(li);
   });
 }
+async function load(){
+  const tok=++req;
+  $('#podium').innerHTML='';$('#rows').innerHTML='';$('#empty').textContent=t('loading');
+  if(!sb)return;
+  if(cat!=='pts'&&!board){draw([]);$('#empty').textContent=t('nobody_cfg');return}
+  const {data,error}=cat==='pts'?await sb.rpc('leaderboard_points',{p_period:period}):await sb.rpc('leaderboard',{p_board:board,p_period:period});
+  if(tok!==req)return;
+  if(error){$('#empty').textContent=!navigator.onLine?t('rank_offline'):cat==='pts'&&/PGRST202|42883/.test(error.code||'')?t('pts_soon'):t('rank_fail');return}
+  const rows=(data||[]).map(r=>({pos:+r.pos,nick:r.nickname,score:cat==='pts'?+r.points:r.score,runs:+r.runs||0}));
+  draw(rows);$('#empty').textContent=rows.length?'':t('nobody_period');
+}
+function drawHow(){
+  const tb=$('#howt'),hr=el('tr');hr.append(el('th',null,''));LV.forEach(n=>hr.append(el('th',null,n)));
+  const th=el('thead'),bd=el('tbody');th.append(hr);
+  Object.entries(P.TABLE).forEach(([o,v])=>{const tr=el('tr');tr.append(el('td',null,NM[o]||o));v.forEach(x=>tr.append(el('td',null,nf.format(x))));bd.append(tr)});
+  tb.append(th,bd);
+}
 $('#pd').onclick=e=>{const b=e.target.closest('button');if(!b)return;period=b.dataset.p;[...$('#pd').children].forEach(x=>x.setAttribute('aria-pressed',x===b));load()};
-$('#bd').onchange=e=>{cur=e.target.value;load()};
+$('#cat').onclick=e=>{
+  const b=e.target.closest('button');if(!b||b.dataset.c===cat)return;cat=b.dataset.c;board='';
+  if(cat!=='pts'){
+    const top=boards.filter(x=>x.m===cat).sort((a,b)=>b.players-a.players)[0];
+    if(mine&&mine.m===cat)lvl=mine.l;else if(!boards.some(x=>x.m===cat&&x.l===lvl)&&top)lvl=top.l;
+  }
+  drawFilters();load();
+};
+$('#lvs').onclick=e=>{const b=e.target.closest('button');if(!b)return;lvl=+b.dataset.l;board='';drawFilters();load()};
+$('#vars').onclick=e=>{const b=e.target.closest('button');if(!b)return;board=b.dataset.b;drawFilters();load()};
+async function init(){
+  try{const c=JSON.parse(localStorage.getItem('calcmental')).cfg;mine=parse(keyOf(c));lvl=mine.l||lvl}catch(e){}
+  // ranking.html#b=<board> abre direto o ranking daquela configuração (link do fim da partida)
+  const h=decodeURIComponent(location.hash.slice(1));
+  if(h.startsWith('b=')){const c=parse(h.slice(2));if(CATS.includes(c.m)&&c.m!=='pts'&&c.l>=1&&c.l<=4){cat=c.m;lvl=c.l;board=c.b}}
+  drawHow();drawFilters();
+  try{if(!window.MMclient)throw new Error(t('e_mm'));sb=MMclient()}catch(e){$('#empty').textContent=e.message;return}
+  load();
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){const {data}=await sb.from('profiles').select('nickname').eq('id',session.user.id).maybeSingle();me=data&&data.nickname}
+  const {data:bl}=await sb.rpc('board_list');
+  boards=(bl||[]).map(x=>Object.assign(parse(x.board),{players:+x.players||0}));
+  drawFilters();load();
+}
 init();
 </script>
 </body>
