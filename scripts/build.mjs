@@ -1,7 +1,7 @@
 // Mental Math — build sem dependências.
-//   node scripts/build.mjs          gera mental-math.html (versão de arquivo único) e a pasta www/ (usada pelo app Android)
+//   node scripts/build.mjs          gera mental-math.html (versão de arquivo único), www/ (app Android) e public/ (site na Vercel)
 //   node scripts/build.mjs --check  só confere se mental-math.html está atualizado (usado no CI)
-import {readFileSync,writeFileSync,mkdirSync,rmSync,cpSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,rmSync,cpSync,existsSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -35,11 +35,19 @@ if(process.argv.includes('--check')){
   console.log('mental-math.html está atualizado.');
 }else{
   writeFileSync(join(root,'mental-math.html'),out);
+  const copy=(dir,files)=>{
+    const d=join(root,dir);rmSync(d,{recursive:true,force:true});mkdirSync(d);
+    for(const f of files)cpSync(join(root,f),join(d,f),{recursive:true});
+  };
   // ---- www/: arquivos que vão dentro do app (Capacitor) ----
-  const www=join(root,'www');
-  rmSync(www,{recursive:true,force:true});mkdirSync(www);
-  for(const f of ['index.html','jogo.html','ranking.html','mental-math.html','game.css','site.css','pc.css','i18n.js','points.js','game.js','online.js','mm.js','config.js',
-    'bg.jpg','bg-pc.jpg','bg-game.jpg','favicon.ico','favicon-32.png','apple-touch-icon.png','icon.svg','manifest.webmanifest','vendor'])
-    cpSync(join(root,f),join(www,f),{recursive:true});
-  console.log('Gerados: mental-math.html e www/');
+  const APP=['index.html','jogo.html','ranking.html','mental-math.html','game.css','site.css','pc.css','i18n.js','points.js','game.js','online.js','mm.js','config.js',
+    'bg.jpg','bg-pc.jpg','bg-game.jpg','favicon.ico','favicon-32.png','apple-touch-icon.png','icon.svg','manifest.webmanifest','vendor'];
+  copy('www',APP);
+  // ---- public/: o site publicado pela Vercel (vercel.json) = app + página de apresentação + modo offline ----
+  copy('public',[...APP,'app.html','img','sw.js']);
+  // Confere se tudo o que o service worker guarda para o modo offline existe no site.
+  const sw=read('sw.js').match(/const FILES=\[([\s\S]*?)\];/)[1].match(/'([^']+)'/g).map(x=>x.slice(1,-1)).filter(f=>f!=='./');
+  const falta=sw.filter(f=>!existsSync(join(root,'public',f)));
+  if(falta.length)throw new Error('sw.js guarda arquivos que não estão em public/: '+falta.join(', '));
+  console.log('Gerados: mental-math.html, www/ (app) e public/ (site)');
 }
