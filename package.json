@@ -1,0 +1,20 @@
+{
+  "name": "mental-math",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mental Math — jogo de cálculo mental (site + app Android via Capacitor)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "android": "node scripts/build.mjs && npx cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/share": "^8.0.3"
+  }
+}

@@ -7,54 +7,84 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Mental Math — Entrar</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Mental Math: treine cálculo mental contra o relógio, faça o Desafio do dia e dispute o ranking.">
+<title data-i18n="t_login">Mental Math</title>
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="pc.css" media="(min-width: 1200px)">
 </head>
 <body class="pg-login">
 <main>
-<header class="brand"><svg class="logo" viewBox="0 0 56 56" aria-hidden="true"><path d="M28 8 48 44H8Z" fill="rgba(236,208,143,.08)" stroke="#ecd08f" stroke-width="1.5" stroke-linejoin="round"/><path d="M0 38 15.5 31H41" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><g stroke-width="1.6" stroke-linecap="round"><path d="M41 31 56 36" stroke="#ef4444"/><path d="M41 31 56 39.5" stroke="#f59e0b"/><path d="M41 31 56 43" stroke="#eab308"/><path d="M41 31 56 46.5" stroke="#22c55e"/><path d="M41 31 56 50" stroke="#3b82f6"/><path d="M41 31 56 53.5" stroke="#8b5cf6"/></g></svg><div><h1 class="g">Mental Math</h1><p class="sub">Entre para aparecer no ranking.</p></div></header>
-<ul class="pitch"><li>9 operações, 4 níveis e 4 modos de treino</li><li>Desafio do dia: as mesmas questões para todos</li><li>Ranking por modo e nível, com apelido</li></ul>
+<header class="brand"><svg class="logo" viewBox="0 0 56 56" aria-hidden="true"><path d="M28 8 48 44H8Z" fill="rgba(236,208,143,.08)" stroke="#ecd08f" stroke-width="1.5" stroke-linejoin="round"/><path d="M0 38 15.5 31H41" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><g stroke-width="1.6" stroke-linecap="round"><path d="M41 31 56 36" stroke="#ef4444"/><path d="M41 31 56 39.5" stroke="#f59e0b"/><path d="M41 31 56 43" stroke="#eab308"/><path d="M41 31 56 46.5" stroke="#22c55e"/><path d="M41 31 56 50" stroke="#3b82f6"/><path d="M41 31 56 53.5" stroke="#8b5cf6"/></g></svg><div><h1 class="g">Mental Math</h1><p class="sub" data-i18n="sub_login"></p></div></header>
+<ul class="pitch"><li data-i18n="pitch1"></li><li data-i18n="pitch2"></li><li data-i18n="pitch3"></li></ul>
 <div class="card">
-<div class="tabs"><button type="button" id="t1" aria-pressed="true">Entrar</button><button type="button" id="t2" aria-pressed="false">Criar conta</button></div>
+<div class="tabs"><button type="button" id="t1" aria-pressed="true" data-i18n="tab_in"></button><button type="button" id="t2" aria-pressed="false" data-i18n="tab_up"></button></div>
 <form id="f">
-<div id="nk" hidden><label for="nick">Apelido</label><input id="nick" maxlength="16" autocomplete="nickname" placeholder="3 a 16: letras, números, _ . -"></div>
-<label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required>
-<label for="pw">Senha</label><input id="pw" type="password" minlength="8" autocomplete="current-password" required placeholder="mínimo de 8 caracteres">
+<div id="nk" hidden><label for="nick" data-i18n="nick"></label><input id="nick" maxlength="16" autocomplete="nickname" data-i18n-ph="nick_ph"></div>
+<label for="em" data-i18n="email"></label><input id="em" type="email" autocomplete="email" required>
+<label for="pw" data-i18n="pw"></label><input id="pw" type="password" minlength="8" autocomplete="current-password" required data-i18n-ph="pw_ph">
 <p id="msg" role="alert"></p>
-<button class="cta" id="go">Entrar</button>
+<button class="cta" id="go" data-i18n="tab_in"></button>
+<button type="button" class="link" id="fg" data-i18n="forgot"></button>
 </form>
 </div>
-<button type="button" class="ghost" id="guest">Jogar como convidado</button>
+<button type="button" class="ghost" id="guest" data-i18n="guest_play"></button>
+<a class="link" id="getapp" href="app.html" data-i18n="get_app"></a>
+<select class="lang"></select>
 <p class="cap">Principia Mathematica</p>
 </main>
+<script src="i18n.js"></script>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="vendor/supabase.js"></script>
 <script src="mm.js"></script>
 <script>
-const $=s=>document.querySelector(s),msg=t=>$('#msg').textContent=t;
-let mode='in',sb;
-try{if(!window.MMclient)throw new Error('Falta o arquivo mm.js no repositório. Envie-o junto com os outros.');sb=MMclient()}
+L.apply();
+const t=L.t,$=s=>document.querySelector(s),msg=(t,ok)=>{$('#msg').textContent=t;$('#msg').classList.toggle('ok',!!ok)};
+// Link de "redefinir senha" do e-mail: o Supabase devolve a sessão na URL com type=recovery.
+let mode='in',sb,recovery=/type=recovery/.test(location.hash);
+try{if(!window.MMclient)throw new Error(t('e_mm'));sb=MMclient()}
 catch(e){msg(e.message);$('#go').disabled=true}
-if(sb)sb.auth.getSession().then(({data})=>{if(data.session)location.replace('jogo.html')});
-function tab(m){mode=m;$('#t1').setAttribute('aria-pressed',m==='in');$('#t2').setAttribute('aria-pressed',m==='up');$('#nk').hidden=m==='in';$('#go').textContent=m==='in'?'Entrar':'Criar conta';$('#pw').autocomplete=m==='in'?'current-password':'new-password';msg('')}
+if(!navigator.onLine)msg(t('offline_login'));
+if(window.Capacitor)$('#getapp').hidden=true;
+// No app não existe endereço público próprio: o link do e-mail precisa apontar para o site (MM.site no config.js).
+const resetUrl=window.Capacitor?(window.MM&&MM.site?MM.site.replace(/\/?$/,'/index.html'):''):location.origin+location.pathname;
+if(!resetUrl)$('#fg').hidden=true;
+function tab(m){mode=m;$('#t1').setAttribute('aria-pressed',m==='in');$('#t2').setAttribute('aria-pressed',m==='up');$('#nk').hidden=m==='in';$('#fg').hidden=m!=='in'||!resetUrl;$('#go').textContent=t(m==='in'?'tab_in':'tab_up');$('#pw').autocomplete=m==='in'?'current-password':'new-password';msg('')}
+function recoverUI(){mode='new';recovery=true;$('.tabs').hidden=$('#nk').hidden=$('#fg').hidden=true;$('#em').hidden=$('label[for=em]').hidden=true;$('#em').required=false;$('label[for=pw]').textContent=t('new_pw');$('#pw').autocomplete='new-password';$('#pw').value='';$('#go').textContent=t('save_pw');msg(t('type_new_pw'),1);$('#pw').focus()}
+if(sb){
+  sb.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')recoverUI()});
+  if(recovery)recoverUI();
+  sb.auth.getSession().then(({data})=>{if(data.session&&!recovery)location.replace('jogo.html')});
+}
 $('#t1').onclick=()=>tab('in');$('#t2').onclick=()=>tab('up');
-const ERR={'Invalid login credentials':'E-mail ou senha incorretos.','User already registered':'Este e-mail já está cadastrado.','Email not confirmed':'Confirme seu e-mail antes de entrar.'};
+const ERR={'Invalid login credentials':'err_creds','User already registered':'err_exists','Email not confirmed':'err_confirm','New password should be different from the old password.':'err_same_pw'};
+$('#fg').onclick=async()=>{
+  if(!sb)return;const email=$('#em').value.trim();
+  if(!$('#em').checkValidity()||!email){msg(t('need_email'));$('#em').focus();return}
+  const b=$('#fg');b.disabled=true;
+  try{const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:resetUrl});if(error)throw error;msg(t('reset_sent'),1)}
+  catch(x){msg(x.message||t('reset_fail'))}
+  finally{b.disabled=false}
+};
 $('#f').onsubmit=async e=>{
   e.preventDefault();if(!sb)return;const b=$('#go');b.disabled=true;msg('');
   try{
     const email=$('#em').value.trim(),password=$('#pw').value;
+    if(mode==='new'){
+      const {error}=await sb.auth.updateUser({password});if(error)throw error;
+      history.replaceState(null,'',location.pathname);location.replace('jogo.html');return;
+    }
     if(mode==='up'){
       const nick=$('#nick').value.trim();
-      if(!/^[A-Za-z0-9_.-]{3,16}$/.test(nick))return msg('Apelido: 3 a 16 caracteres (letras, números, _ . -).');
+      if(!/^[A-Za-z0-9_.-]{3,16}$/.test(nick))return msg(t('nick_bad'));
       const {data:free}=await sb.rpc('nickname_free',{p_nick:nick});
-      if(free===false)return msg('Esse apelido já está em uso.');
+      if(free===false)return msg(t('nick_taken'));
       const {data,error}=await sb.auth.signUp({email,password,options:{data:{nickname:nick}}});
       if(error)throw error;
-      if(!data.session)return msg('Conta criada! Confirme o e-mail para entrar.');
+      if(!data.session)return msg(t('created'),1);
     }else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error}
     location.href='jogo.html';
-  }catch(x){msg(ERR[x.message]||x.message||'Erro inesperado.')}
+  }catch(x){msg(ERR[x.message]?t(ERR[x.message]):x.message||t('err_unexpected'))}
   finally{b.disabled=false}
 };
 $('#guest').onclick=()=>{sessionStorage.setItem('mm_guest','1');location.href='jogo.html'};
