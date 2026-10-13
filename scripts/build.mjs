@@ -19,11 +19,12 @@ function standalone(){
   const swap=(a,b)=>{if(!html.includes(a))throw new Error('Não achei em jogo.html: '+a);html=html.replace(a,()=>b)};
   html=html.replace(/<!--online-->[\s\S]*?<!--\/online-->\n?/g,'');
   swap(html.match(/<!-- O visual e a lógica.*-->/)?.[0]??'<!-- comentário de jogo.html -->',
-    '<!-- ARQUIVO GERADO por scripts/build.mjs a partir de jogo.html, game.css e game.js. Não edite aqui: edite os originais e rode "npm run build". -->\n'+
+    '<!-- ARQUIVO GERADO por scripts/build.mjs a partir de jogo.html, game.css, game.js, points.js e i18n.js. Não edite aqui: edite os originais e rode "npm run build". -->\n'+
     `<link rel="icon" type="image/png" href="${dataUri('favicon-32.png','image/png')}">`);
   swap('<link rel="stylesheet" href="game.css">',`<style>\n${inlineImages(read('game.css'))}</style>`);
   swap('<link rel="stylesheet" href="pc.css" media="(min-width: 1200px)">',`<style>@media (min-width:1200px){\n:root{--pcbg:url("${dataUri('bg-pc.jpg','image/jpeg')}")}\n${inlineImages(read('pc.css'))}\n}</style>`);
   swap('<script src="i18n.js"></script>',script('i18n.js'));
+  swap('<script src="points.js"></script>',script('points.js'));
   swap('<script src="game.js"></script>',script('game.js'));
   return html;
 }
@@ -37,7 +38,7 @@ if(process.argv.includes('--check')){
   // ---- www/: arquivos que vão dentro do app (Capacitor) ----
   const www=join(root,'www');
   rmSync(www,{recursive:true,force:true});mkdirSync(www);
-  for(const f of ['index.html','jogo.html','ranking.html','mental-math.html','game.css','site.css','pc.css','i18n.js','game.js','online.js','mm.js','config.js',
+  for(const f of ['index.html','jogo.html','ranking.html','mental-math.html','game.css','site.css','pc.css','i18n.js','points.js','game.js','online.js','mm.js','config.js',
     'bg.jpg','bg-pc.jpg','bg-game.jpg','favicon.ico','favicon-32.png','apple-touch-icon.png','icon.svg','manifest.webmanifest','vendor'])
     cpSync(join(root,f),join(www,f),{recursive:true});
   console.log('Gerados: mental-math.html e www/');

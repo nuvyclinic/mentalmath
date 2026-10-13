@@ -21,6 +21,8 @@ main::before{position:fixed;inset:14px}
 .t5{display:grid;grid-template-columns:2.4em 1fr auto;gap:8px;padding:9px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
 .t5 span:first-child{color:var(--mut)}.t5 span:last-child{color:var(--a1)}
 .t5.me{background:rgba(201,164,92,.12)}
+.t5 em{display:block;font-style:normal;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rt,var(--mut))}
+.t5.r1{--rt:#ecd08f}.t5.r2{--rt:#d6dce3}.t5.r3{--rt:#e3a874}.t5.r4{--rt:#c4b6f7}
 .pg-game #game.on{display:grid;grid-template-columns:250px minmax(0,1fr) 300px;grid-template-rows:auto auto 1fr;gap:16px 28px;min-height:calc(100vh - 72px)}
 .pg-game #game .top,.pg-game #game .bar{grid-column:1/-1}
 .pg-game #game .panel{display:block;grid-column:1;grid-row:3;align-self:start}
@@ -54,11 +56,4 @@ main::before{position:fixed;inset:14px}
 .pg-login #guest{grid-column:2;grid-row:3}
 .pg-login .cap{grid-column:1/-1}
 
-/* ---- ranking ---- */
-.pg-rank main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px 32px;align-content:start;max-width:1040px}
-.pg-rank .top{grid-column:1/-1}
-.pg-rank #pd{grid-column:1;flex-direction:column}
-.pg-rank #bd{grid-column:1}
-.pg-rank .card{grid-column:2;grid-row:2/span 3;align-self:start}
-.pg-rank .cap{grid-column:1/-1}
-.pg-rank td{padding:14px 10px;font-size:1.1rem}
+/* ---- ranking: estilos em ranking.html ---- */

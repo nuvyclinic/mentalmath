@@ -16,6 +16,7 @@ const save=()=>{try{localStorage.setItem('calcmental',JSON.stringify({cfg,rec}))
 const day=()=>{try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'})}catch(e){return new Date().toISOString().slice(0,10)}},rk=()=>(cfg.mode==='daily'?'daily'+day():cfg.mode)+cfg.lvl+(cfg.dec?'d':'')+cfg.ops.map(o=>XC[o]||'').join(''),cm=x=>String(x).replace('.',L.dec),
 fmt=r=>TM()?cm((r/1000).toFixed(1))+'s':r,
 fmtRec=r=>TM()?fmt(r):L.n('hits',r),
+num=n=>n.toLocaleString(L.lang==='pt'?'pt-BR':L.lang),
 F=n=>{const i=Math.floor(n/10),f=n%10;return f?i+'.'+f:String(i)},
 show=id=>{document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));$('main').classList.toggle('play',id==='game');document.body.classList.toggle('play',id==='game')},
 norm=v=>{let x=v.replace(',','.');if(x[0]==='.')x='0'+x;return x.includes('.')?x.replace(/0+$/,'').replace(/\.$/,''):x};
@@ -96,6 +97,7 @@ function ui(){
   $('#dec').setAttribute('aria-checked',cfg.dec);$('#snd').setAttribute('aria-checked',cfg.snd);
   const r=rec[rk()];
   $('#rec').textContent=r==null?t('no_rec'):t('rec',{r:fmtRec(r)});
+  $('#ppa').textContent=t('ppa',{p:num(Math.round(MMpoints.perHit(cfg.lvl,cfg.dec,cfg.ops.join(''),cfg.mode)))});
   if(window.MMtop5)window.MMtop5();
 }
 $('#home').onclick=e=>{
@@ -159,21 +161,24 @@ function end(msg){
   const el=performance.now()-S.t0+S.pen,tm=TM(),done=tm&&S.ok>=NQ(),sc=done?Math.round(el):S.ok,k=rk(),p=rec[k];
   const nr=tm?done&&(p==null||sc<p):S.ok>0&&(p==null||sc>p);
   if(nr){rec[k]=sc;save()}
-  const tot=S.ok+S.err,avg=S.tm.length?S.tm.reduce((a,b)=>a+b)/S.tm.length/1000:0;
+  const tot=S.ok+S.err,avg=S.tm.length?S.tm.reduce((a,b)=>a+b)/S.tm.length/1000:0,valid=tm?done:S.ok>0;
+  // Mesma conta do ranking geral (points.js = função run_points do Supabase)
+  const pts=valid?MMpoints.run(cfg.mode,cfg.lvl,cfg.dec,cfg.ops.join(''),sc,S.ok,S.err):0;
   $('#et').textContent=msg;
   $('#eb').textContent=done?fmt(sc):S.ok;
   const er=$('#er');er.textContent=t(done?'total_time':'hits_word');er.appendChild(document.createElement('br'));
   if(nr){const b=document.createElement('span');b.className='badge';b.textContent=t('new_rec');er.appendChild(b)}
   else er.append(t('rec',{r:rec[k]==null?t('rec_none'):fmtRec(rec[k])}));
-  $('#eg').innerHTML=[['s_ok',S.ok],['s_err',S.err],['s_acc',tot?Math.round(S.ok/tot*100)+'%':'—'],['s_avg',avg?cm(avg.toFixed(2))+'s':'—'],['s_ms',S.ms],['s_h',S.hints]].map(([a,b])=>`<div><b>${b}</b><span>${t(a)}</span></div>`).join('');
+  $('#eg').innerHTML=[['s_pts',num(pts)],['s_ok',S.ok],['s_err',S.err],['s_acc',tot?Math.round(S.ok/tot*100)+'%':'—'],['s_avg',avg?cm(avg.toFixed(2))+'s':'—'],['s_ms',S.ms],['s_h',S.hints]].map(([a,b])=>`<div><b>${b}</b><span>${t(a)}</span></div>`).join('');
   $('#rv').innerHTML=S.rv.length?'<h2>'+t('review')+'</h2>'+S.rv.slice(0,5).map(r=>`<div>${r}</div>`).join(''):'';
   $('#rv').style.display=S.rv.length?'':'none';
   const dt=cfg.mode==='daily'?' '+L.dm(day()):'',u=/^https?:/.test(location.protocol)&&!/^https?:\/\/localhost/.test(location.href)?'\n'+location.href.replace(/[^/]*([?#].*)?$/,''):(window.MM&&MM.site?'\n'+MM.site:'');
   S.share='Mental Math · '+t('m_'+cfg.mode)+dt+' · '+LV[cfg.lvl-1]+' · '+cfg.ops.map(o=>LB[o]||o).join(' ')+(cfg.dec?' · '+t('decimals'):'')+'\n'+(done?'⏱ '+fmt(sc)+' · ':'')+L.n('hits',S.ok)+', '+L.n('errs',S.err)+(nr?t('share_rec'):'')+u;
   $('#share').textContent=t('share');
   if($('#sent'))$('#sent').textContent='';
+  const lk=$('.lk');if(lk)lk.href='ranking.html#b='+encodeURIComponent(bk());
   show('end');
-  if(window.MMsubmit)window.MMsubmit({mode:cfg.mode,board:bk(),score:sc,ok:S.ok,err:S.err,valid:tm?done:S.ok>0});
+  if(window.MMsubmit)window.MMsubmit({mode:cfg.mode,board:bk(),score:sc,ok:S.ok,err:S.err,valid});
 }
 
 $('#pad').innerHTML=[1,2,3,4,5,6,7,8,9,',',0,'b'].map(k=>`<button data-k="${k}" aria-label="${k=='b'?t('k_del'):k==','?t('k_dec'):k}">${k=='b'?'⌫':k==','?L.dec:k}</button>`).join('');

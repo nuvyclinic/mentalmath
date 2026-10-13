@@ -23,8 +23,13 @@
         if(error)throw error;
         const el=$('#top5');el.innerHTML='';
         (data||[]).slice(0,5).forEach(r=>{
-          const d=document.createElement('div');d.className='t5'+(r.nickname===nk?' me':'');
-          [(['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos),r.nickname,fmtRec(r.score)].forEach(v=>{const s=document.createElement('span');s.textContent=v;d.appendChild(s)});
+          const d=document.createElement('div');d.className='t5'+(r.pos<=4?' r'+r.pos:'')+(r.nickname===nk?' me':'');
+          [(['🥇','🥈','🥉'][r.pos-1]||'#'+r.pos),r.nickname,fmtRec(r.score)].forEach((v,j)=>{
+            const s=document.createElement('span');s.textContent=v;
+            // Os 4 primeiros levam o título: Arquimedes, Isaac Newton, Carl Friedrich Gauss, Leonhard Euler
+            if(j===1&&r.pos<=4){const e=document.createElement('em');e.textContent=t('t'+r.pos);s.appendChild(e)}
+            d.appendChild(s);
+          });
           el.appendChild(d);
         });
         if(!(data||[]).length)el.textContent=t('top5_empty');
@@ -44,7 +49,7 @@
         if(error){el.textContent=['too_fast','implausible','bad_day','login_required'].includes(error.message)?t(error.message):t('send_fail');return}
         const {data:lb}=await sb.rpc('leaderboard',{p_board:r.board,p_period:'all'});
         const i=(lb||[]).findIndex(x=>x.nickname===nk);
-        el.textContent=t('sent')+(i>=0?t('sent_pos',{i:i+1,n:lb.length}):'');
+        el.textContent=t('sent')+(i>=0?t('sent_pos',{i:i+1,n:lb.length})+(i<4?' — '+t('t'+(i+1)):''):'');
       }catch(e){el.textContent=t('send_fail')}
     };
   }catch(e){console.warn('Online indisponível:',e.message);window.MMsubmit=async()=>{$('#sent').textContent=navigator.onLine?t('rank_off',{e:e.message}):t('offline_send')}}

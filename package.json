@@ -1,6 +1,6 @@
 {
   "name": "mental-math",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Mental Math — jogo de cálculo mental (site + app Android via Capacitor)",
   "scripts": {
